@@ -30,7 +30,7 @@ void setup() {
     srand(rtc_Time());
 
     timer_Disable(1);
-    timer_Set(1, 32768 * 20);
+    timer_Set(1, 32768 * 60);
     timer_Enable(1, TIMER_32K, TIMER_0INT, TIMER_DOWN);
 
     player.xpos = LCD_WIDTH / 2;
@@ -75,18 +75,7 @@ void scanKeys() {
 }
 
 void calculateDistance() {
-    uint16_t dist;
-    int16_t distX, distY;
 
-    distX = player.xpos - COIN.xpos;
-    distY = player.ypos - COIN.ypos;
-    dist = sqrt((distX * distX) + (distY * distY));
-
-    if (dist <= 16) { // 16 = player radius + coin radius
-        player.coinCount++;
-        COIN.xpos = randInt(0, 304);
-        COIN.ypos = randInt(10, 224);
-    }
 }
 
 void drawSprites() {
@@ -153,19 +142,34 @@ void gameOverMenu() {
 }
 
 void collision() {
+    // wall collision
     // check x
-    if (player.xpos >= 303) {
-        player.xpos = 303;
+    if (player.xpos >= 302) {
+        player.xpos = 302;
     }
-    if (player.xpos <= 1) {
-        player.xpos = 1;
+    if (player.xpos <= 2) {
+        player.xpos = 2;
     }
     // check y
-    if (player.ypos <= 11) {
-        player.ypos = 11;
+    if (player.ypos <= 12) {
+        player.ypos = 12;
     }
-    if (player.ypos >= 223) {
-        player.ypos = 223;
+    if (player.ypos >= 222) {
+        player.ypos = 222;
+    }
+
+    // coin & player collision
+    uint16_t dist;
+    int16_t distX, distY;
+
+    distX = player.xpos - COIN.xpos;
+    distY = player.ypos - COIN.ypos;
+    dist = sqrt((distX * distX) + (distY * distY));
+
+    if (dist <= 16) { // 16 = player radius + coin radius
+        player.coinCount++;
+        COIN.xpos = randInt(0, 304);
+        COIN.ypos = randInt(10, 224);
     }
 }
 
@@ -181,8 +185,6 @@ int main(void) {
         scanKeys();
 
         collision();
-
-        calculateDistance();
 
         drawSprites();
 
